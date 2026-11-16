@@ -1,0 +1,51 @@
+# Base de donnees : 1 seul replica, sans volume persistant
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: bijouterie
+  labels:
+    app: bijouterie
+    tier: database
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate          # jamais deux MySQL en meme temps
+  selector:
+    matchLabels:
+      app: bijouterie
+      tier: database
+  template:
+    metadata:
+      labels:
+        app: bijouterie
+        tier: database
+    spec:
+      containers:
+        - name: mysql
+          image: diafall222/bijouterie-mysql:1.1      # tag de build, pas latest
+          ports:
+            - name: mysql
+              containerPort: 3306
+          envFrom:
+            - secretRef:
+                name: mysql-secret   # envFrom : injecte toutes les cles du Secret
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          readinessProbe:            # retire le pod du Service tant que MySQL n'est pas pret
+            exec:
+              command: ["sh", "-c", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$MYSQL_ROOT_PASSWORD\" --silent"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:             # redemarre le conteneur s'il ne repond plus
+            exec:
+              command: ["sh", "-c", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$MYSQL_ROOT_PASSWORD\" --silent"]
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5

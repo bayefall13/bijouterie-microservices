@@ -1,0 +1,7 @@
+# Namespace de l'application : isole toutes ses ressources du reste du cluster
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bijouterie
+  labels:
+    app: bijouterie
