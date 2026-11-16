@@ -1,0 +1,25 @@
+# Application Argo CD : surveille le dossier k8s/ du depot et le deploie
+# dans le namespace bijouterie du cluster local.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bijouterie
+  namespace: argocd        # l'objet Application vit dans le namespace d'Argo CD
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/bayefall13/bijouterie-microservices.git
+    targetRevision: main
+    path: k8s              # seul ce dossier est surveille
+
+  destination:
+    server: https://kubernetes.default.svc   # le cluster ou tourne Argo CD
+    namespace: bijouterie
+
+  syncPolicy:
+    automated:
+      prune: true          # supprime du cluster ce qui a ete retire de Git
+      selfHeal: true       # annule les modifications faites hors de Git
+    syncOptions:
+      - CreateNamespace=true
