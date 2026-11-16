@@ -1,0 +1,58 @@
+# Site web Nginx : 2 replicas, sert les pages et relaie /api vers le backend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: bijouterie
+  labels:
+    app: bijouterie
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bijouterie
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: bijouterie
+        tier: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: diafall222/bijouterie-frontend:1.1
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            # valueFrom : chaque variable est declaree explicitement
+            - name: BACKEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: BACKEND_URL
+            - name: MAX_UPLOAD_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: MAX_UPLOAD_SIZE
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 300m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz      # route servie par Nginx, ne teste pas l'API
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20

@@ -1,0 +1,13 @@
+# Variables injectees dans le template Nginx au demarrage du conteneur.
+# Un changement ici necessite un rollout restart du frontend.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: bijouterie
+  labels:
+    app: bijouterie
+    tier: frontend
+data:
+  BACKEND_URL: "http://backend:3000"   # nom du Service backend
+  MAX_UPLOAD_SIZE: "6m"                # legerement superieur a MAX_FILE_SIZE_MB
