@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: diafall222/bijouterie-backend:1.1
+          image: diafa/bijouterie-backend:1.1
           ports:
             - name: http
               containerPort: 3000

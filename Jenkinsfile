@@ -5,7 +5,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'diafall222'
+        DOCKERHUB_USER = 'diafa'
         IMAGE_TAG      = "1.${BUILD_NUMBER}"        // tag unique par build
         BACKEND_IMAGE  = "${DOCKERHUB_USER}/bijouterie-backend"
         FRONTEND_IMAGE = "${DOCKERHUB_USER}/bijouterie-frontend"

@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: diafall222/bijouterie-frontend:1.1
+          image: diafa/bijouterie-frontend:1.1
           ports:
             - name: http
               containerPort: 80
