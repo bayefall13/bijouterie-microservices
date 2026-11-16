@@ -1,0 +1,62 @@
+# API REST : 2 replicas, le backend est sans etat (les photos sont en base)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: bijouterie
+  labels:
+    app: bijouterie
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bijouterie
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: bijouterie
+        tier: backend
+    spec:
+      containers:
+        - name: backend
+          image: diafall222/bijouterie-backend:1.1
+          ports:
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: backend-config    # envFrom : toutes les cles de la ConfigMap
+          env:
+            # valueFrom : une cle precise, utilisee ici pour les valeurs sensibles
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: DB_PASSWORD
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:        # renvoie 503 tant que MySQL n'est pas joignable
+            httpGet:
+              path: /api/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 6
+          livenessProbe:         # ne teste que le processus Node
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 15

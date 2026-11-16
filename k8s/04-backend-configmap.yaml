@@ -1,0 +1,17 @@
+# Configuration non sensible du backend (les identifiants sont dans backend-secret)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: bijouterie
+  labels:
+    app: bijouterie
+    tier: backend
+data:
+  PORT: "3000"
+  DB_HOST: "mysql"              # nom du Service MySQL
+  DB_PORT: "3306"
+  DB_NAME: "bijouterie"         # identique a MYSQL_DATABASE
+  SHOP_NAME: "Bijouterie Cissé Or"
+  CURRENCY: "EUR"
+  MAX_FILE_SIZE_MB: "5"
