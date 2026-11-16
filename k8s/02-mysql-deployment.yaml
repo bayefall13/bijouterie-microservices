@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: diafa/bijouterie-mysql:1.5      # tag de build, pas latest
+          image: diafa/bijouterie-mysql:1.6      # tag de build, pas latest
           ports:
             - name: mysql
               containerPort: 3306
